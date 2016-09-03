@@ -1,0 +1,6 @@
+; To be run in batch mode
+(add-to-list 'load-path ".")
+(require 'pymacs)
+(load-python-module "sample_pymodule")
+(add-to-sys-path "~/Desktop/pymacs")
+(message "the answer is %d\n" (my_method))
