@@ -9,7 +9,7 @@
 #include "error.h"
 
 
-class PythonInterpreter 
+class PythonInterpreter
 {
 public:
     void start() const;
@@ -20,11 +20,14 @@ public:
     void add_to_sys_path(const std::string &path) const;
 
     void get_exposed_functions();
-    void call_exposed_function(const std::string &name) const;
+    PyObject *call_exposed_function(const std::string &name) const;
 
     // TODO make this private
     typedef std::map<std::string, PyObject*> pyfun_map;
     pyfun_map exported_methods_map;
+
+    std::map<std::string, std::string> return_types;
+
 protected:
     void throw_python_error() const;
 };

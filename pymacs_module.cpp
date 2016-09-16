@@ -1,8 +1,8 @@
 #include "emacs-module.h"
+
+#include "converters.h"
 #include "emacs_environment.h"
 #include "python_interpreter.h"
-
-#include <stdio.h>
 
 #include <string>
 
@@ -16,8 +16,8 @@ static emacs_value
 F_call_python_function(
     emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data) noexcept
 {
-    interpreter.call_exposed_function((const char *)data);
-    return env->make_integer(env, 0);
+    PyObject *retval = interpreter.call_exposed_function((const char *)data);
+    return to_emacs(env, retval);
 }
 
 

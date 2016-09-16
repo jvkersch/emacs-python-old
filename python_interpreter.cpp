@@ -90,7 +90,8 @@ void PythonInterpreter::get_exposed_functions()
 }
 
 
-void PythonInterpreter::call_exposed_function(const std::string &name) const
+PyObject* PythonInterpreter::call_exposed_function(
+    const std::string &name) const
 {
     PyObject *pyfun;
     try {
@@ -105,6 +106,5 @@ void PythonInterpreter::call_exposed_function(const std::string &name) const
     if (retval == nullptr)
         throw_python_error();
     
-    // for now, just print the answer instead of returning it
-    std::cout << "The answer: " << PyInt_AsLong(retval) << std::endl;
+    return retval;
 }
