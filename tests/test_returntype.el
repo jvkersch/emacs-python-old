@@ -1,5 +1,5 @@
 ; Needed to find the pymacs SO
-(add-to-list 'load-path ".")
+(add-to-list 'load-path "..")
 
 ; Load library
 (require 'pymacs)
