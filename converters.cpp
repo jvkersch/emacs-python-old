@@ -1,5 +1,6 @@
 #include <Python.h>
 #include "converters.h"
+#include "emacs_environment.h"
 #include "error.h"
 
 #include <iostream>
@@ -52,14 +53,23 @@ std::vector<PyObject*> from_emacs(
         long typ = argtypes[i];
 
         PyObject *item;
+        // Typecodes should match what's in pymacs_utils.py
         switch (typ) {
-        case 1:
+        case 1:  // int
             item = PyInt_FromLong(env->extract_integer(env, args[i]));
-            out[i] = item;
+            break;
+        case 2:  // float
+            item = PyFloat_FromDouble(env->extract_float(env, args[i]));
+            break;
+        case 3:  // str
+            item = PyString_FromString(
+                get_string_from_arg(env, args[i]).c_str());
             break;
         default:
             throw Error(std::string("Argument type not supported"));
         }
+
+        out[i] = item;
     }
 
     return out;
