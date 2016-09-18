@@ -5,6 +5,7 @@
 #include "python_interpreter.h"
 
 #include <string>
+#include <iostream>
 
 extern "C"
 {
@@ -16,8 +17,20 @@ static emacs_value
 F_call_python_function(
     emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data) noexcept
 {
-    PyObject *retval = interpreter.call_exposed_function((const char *)data);
-    return to_emacs(env, retval);
+    try {
+
+        const char *funname = (const char *)data;
+        std::vector<long> argtypes = interpreter.arg_types.at(funname);
+
+
+        std::vector<PyObject*> pyargs = from_emacs(env, nargs, args, argtypes);
+
+        PyObject *retval = interpreter.call_exposed_function(funname, pyargs);
+        return to_emacs(env, retval);
+
+    } catch (const Error &err) {
+        return signal_error(env, err);
+    }
 }
 
 
@@ -33,7 +46,8 @@ F_load_python_module(
 
         for (auto &namedfun : interpreter.exported_methods_map) {
             const char *name = namedfun.first.c_str();
-            defun(env, name, 0, 0, F_call_python_function, "doc", (void *)name);
+            int nargs = interpreter.arg_types.at(name).size();
+            defun(env, name, nargs, nargs, F_call_python_function, "doc", (void *)name);
         }
 
     } catch (const Error &err) {
