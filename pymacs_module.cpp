@@ -21,8 +21,7 @@ F_call_python_function(
     emacs_value retval;
 
     try {
-        std::vector<long> argtypes = interpreter.arg_types.at(funname);
-        std::vector<PyObject*> pyargs = from_emacs(env, nargs, args, argtypes);
+        std::vector<PyObject*> pyargs = from_emacs(env, nargs, args);
         PyObject *pyretval = interpreter.call_exposed_function(funname, pyargs);
         retval = to_emacs(env, pyretval);
     } catch (const Error &err) {
@@ -45,8 +44,7 @@ F_load_python_module(
 
         for (auto &namedfun : interpreter.exported_methods_map) {
             const char *name = namedfun.first.c_str();
-            int nargs = interpreter.arg_types.at(name).size();
-            defun(env, name, nargs, nargs,
+            defun(env, name, 0, 32,  // TODO get min/max arity from Python?
                   F_call_python_function, "doc", (void *)name);
         }
 

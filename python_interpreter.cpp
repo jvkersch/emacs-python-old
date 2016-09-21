@@ -116,25 +116,6 @@ void PythonInterpreter::get_exposed_functions()
         exported_methods_map[std::string(name)] = value;
     }
 
-    // Load argument typecodes
-    PyObject *arg_types_dict = PyObject_GetAttrString(
-        basemod, "_arg_types");
-    if ((arg_types_dict == nullptr) ||
-        !PyDict_Check(arg_types_dict))
-        throw PythonError("Could not load _arg_types dictionary.");
-
-    // PyObject *key, *value;
-    index = 0;
-    while (PyDict_Next(arg_types_dict, &index, &key, &value)) {
-        if (!PyString_Check(key))
-            continue;
-
-        Py_INCREF(value);  // FIXME copy string into buffer, and remove incref
-        const char *name = PyString_AsString(key);
-        arg_types[std::string(name)] = to_vector(value);
-    }
-
-    Py_XDECREF(arg_types_dict);
     Py_XDECREF(exposed_methods_dict);
     Py_XDECREF(basemod);
 }

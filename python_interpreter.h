@@ -28,8 +28,6 @@ public:
     typedef std::map<std::string, PyObject*> pyfun_map;
     pyfun_map exported_methods_map;
 
-    std::map<std::string, std::vector<long> > arg_types;
-
 protected:
     void throw_python_error() const;
 };

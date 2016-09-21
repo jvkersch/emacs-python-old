@@ -5,11 +5,34 @@
 
 #include <iostream>
 
+
 // Py_XDECREF as a function, used as a callback by emacs' make_user_ptr
 static void _PyObject_DecRef(void *obj) noexcept
 {
     Py_XDECREF(obj);
 }
+
+
+PyObject *convert_emacs_symbol(emacs_env *env, emacs_value symbol)
+{
+    emacs_value typ = env->type_of(env, symbol);
+    PyObject *item = nullptr;
+
+    // TODO Persist these symbols rather than instantiating them on each
+    // invocation.
+    if (typ == env->intern(env, "integer")) {
+        item = PyInt_FromLong(env->extract_integer(env, symbol));
+    } else if (typ == env->intern(env, "float")) {
+        item = PyFloat_FromDouble(env->extract_float(env, symbol));
+    } else if (typ == env->intern(env, "string")) {
+        item = PyString_FromString(
+            get_string_from_arg(env, symbol).c_str());
+    } else
+        throw Error(std::string("Argument type not supported"));
+
+    return item;
+}
+
 
 emacs_value to_emacs(emacs_env *env, PyObject *retval)
 {
@@ -37,39 +60,14 @@ emacs_value to_emacs(emacs_env *env, PyObject *retval)
 std::vector<PyObject*> from_emacs(
     emacs_env *env,
     ptrdiff_t nargs,
-    emacs_value args[],
-    const std::vector<long> &argtypes)
+    emacs_value args[])
 {
     // TODO since this is used just for args passing, build a Python tuple here
-    // instaed of a C++ vector, which will have to be unpacked anyway
-
-    if (nargs != argtypes.size()) {
-        // TODO This is probably not the right errror to raise here
-        throw Error(std::string("Mismatch between Emacs/Python declared number of arguments"));
-    }
+    // instead of a C++ vector, which will have to be unpacked anyway
 
     std::vector<PyObject*> out(nargs);
     for (size_t i = 0; i < nargs; i++) {
-        long typ = argtypes[i];
-
-        PyObject *item;
-        // Typecodes should match what's in pymacs_utils.py
-        switch (typ) {
-        case 1:  // int
-            item = PyInt_FromLong(env->extract_integer(env, args[i]));
-            break;
-        case 2:  // float
-            item = PyFloat_FromDouble(env->extract_float(env, args[i]));
-            break;
-        case 3:  // str
-            item = PyString_FromString(
-                get_string_from_arg(env, args[i]).c_str());
-            break;
-        default:
-            throw Error(std::string("Argument type not supported"));
-        }
-
-        out[i] = item;
+        out[i] = convert_emacs_symbol(env, args[i]);
     }
 
     return out;
