@@ -17,6 +17,18 @@
   (should (equal (py_add_float 2.0 3.0) 5.0)))
 
 
-(ert-deftest test-run-len ()
-  :tags '(run-len)
-  (should (equal (py_len_str "i am a string") 13)))
+(ert-deftest test-run-len-str ()
+  :tags '(run-len-str)
+  (should (equal (py_len "i am a string") 13)))
+
+
+(ert-deftest test-run-len-list ()
+  :tags '(run-len-list)
+  (should (equal (py_len (vector 1 2 3 4)) 4)))
+
+
+(ert-deftest test-run-nested-argument ()
+  :tags '(run-nested)
+  (should (equal (py_nested_len
+                  [["this" "is"] ["a" "nested" "list of strings"]])
+                 28)))

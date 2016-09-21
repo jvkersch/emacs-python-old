@@ -144,15 +144,11 @@ PyObject* PythonInterpreter::call_exposed_function(
         PyTuple_SetItem(args_tuple, i, args[i]);
     }
 
-    std::cout << "calling with " << len << " arguments" << std::endl;
-
     PyObject *retval = PyObject_CallObject(pyfun, args_tuple);
 
     Py_XDECREF(args_tuple);
-
     if (retval == nullptr)
         throw_python_error();
-
 
     return retval;
 }
