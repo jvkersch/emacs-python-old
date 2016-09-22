@@ -1,0 +1,6 @@
+install:
+  - ./tools/install_emacs.sh
+before_script:
+  - make
+script:
+  - EMACS="$HOME/emacs/bin/emacs" make tests
