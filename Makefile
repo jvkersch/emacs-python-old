@@ -10,7 +10,7 @@ RPATH := $$(./find_rpath.py)
 OBJS = pymacs_module.o python_interpreter.o emacs_environment.o converters.o
 
 pymacs.so: $(OBJS)
-	$(LD) -shared $(PY_LDFLAGS) $(LDFLAGS) -Wl,-rpath,$(RPATH) -o $@ $(OBJS)
+	$(LD) -shared $(OBJS) -o $@ $(PY_LDFLAGS) $(LDFLAGS) -Wl,-rpath,$(RPATH)
 
 %.o: %.cpp
 	$(CPP) $(PY_CFLAGS) $(CFLAGS) -I. -fPIC -c -std=c++11 $<
