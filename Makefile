@@ -15,7 +15,7 @@ pymacs.so: $(OBJS)
 .PHONY: clean tests
 
 clean:
-	rm -f pymacs.so $(OBJS)
+	rm -f pymacs.so *.pyc $(OBJS)
 
 tests:
 	cd tests && ./runtests.sh
