@@ -48,19 +48,27 @@ PyObject *convert_emacs_symbol(emacs_env *env, emacs_value symbol)
 
 emacs_value to_emacs(emacs_env *env, PyObject *retval)
 {
+    emacs_value e_retval;
+
     if (PyObject_TypeCheck(retval, &PyInt_Type)) {
-        return env->make_integer(
+        e_retval = env->make_integer(
             env, PyInt_AsLong(retval));
+        Py_DECREF(retval);
+        return e_retval;
     }
 
     if (PyObject_TypeCheck(retval, &PyFloat_Type)) {
-        return env->make_float(
+        e_retval = env->make_float(
             env, PyFloat_AsDouble(retval));
+        Py_DECREF(retval);
+        return e_retval;
     }
 
     if (PyObject_TypeCheck(retval, &PyString_Type)) {
-        return env->make_string(
+        e_retval = env->make_string(
             env, PyString_AsString(retval), PyString_Size(retval));
+        Py_DECREF(retval);
+        return e_retval;
     }
 
     Py_ssize_t len = PyObject_Length(retval);
@@ -74,10 +82,7 @@ emacs_value to_emacs(emacs_env *env, PyObject *retval)
             Py_DECREF(index);
 
             lst_args.push_back(to_emacs(env, item));
-
-            // XXX not decrefing the item here will memory leak for primitive
-            // types, but do the right thing for user pointer.
-            // Py_DECREF(item);
+            Py_DECREF(item);
         }
 
         return env->funcall(env, Flst, len, &lst_args[0]);
