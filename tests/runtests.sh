@@ -5,7 +5,7 @@ EMACS=${EMACS:-emacs}
 
 exitcode=0
 for testfile in *.el; do
-    PYTHONPATH=.. $EMACS \
+    PYTHONPATH=../src $EMACS \
               -batch \
               -l ert \
               -l "$testfile" \
