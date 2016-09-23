@@ -19,3 +19,8 @@ def method_that_returns_a_string():
 @expose
 def method_that_returns_an_object():
     return object()
+
+
+@expose
+def method_that_returns_a_list():
+    return [1, 2, 3, 4]
