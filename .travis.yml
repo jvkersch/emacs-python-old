@@ -1,4 +1,7 @@
 language: cpp
+cache:
+  directories:
+    - $HOME/emacs
 compiler:
   - gcc
 before_install:
