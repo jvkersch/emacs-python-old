@@ -12,7 +12,7 @@ if [ -f "$EMACS_INSTALL_DIR/bin/emacs" ]; then
 fi
 
 wget http://ftp.gnu.org/gnu/emacs/emacs-25.1.tar.gz
-tar xvzf emacs-25.1.tar.gz
+tar xzf emacs-25.1.tar.gz
 cd emacs-25.1
 ./configure \
     --with-modules \
