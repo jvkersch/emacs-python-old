@@ -48,39 +48,60 @@ PyObject *convert_emacs_symbol(emacs_env *env, emacs_value symbol)
 
 emacs_value to_emacs(emacs_env *env, PyObject *retval)
 {
-    // TODO: support non-basic types (eg. nested lists)
+    emacs_value e_retval;
 
     if (PyObject_TypeCheck(retval, &PyInt_Type)) {
-        return env->make_integer(
+        e_retval = env->make_integer(
             env, PyInt_AsLong(retval));
+        Py_DECREF(retval);
+        return e_retval;
     }
 
     if (PyObject_TypeCheck(retval, &PyFloat_Type)) {
-        return env->make_float(
+        e_retval = env->make_float(
             env, PyFloat_AsDouble(retval));
+        Py_DECREF(retval);
+        return e_retval;
     }
 
     if (PyObject_TypeCheck(retval, &PyString_Type)) {
-        return env->make_string(
+        e_retval = env->make_string(
             env, PyString_AsString(retval), PyString_Size(retval));
+        Py_DECREF(retval);
+        return e_retval;
+    }
+
+    Py_ssize_t len = PyObject_Length(retval);
+    if (len != -1) {
+        emacs_value Flst = env->intern(env, "list");
+        std::vector<emacs_value> lst_args;
+
+        for (Py_ssize_t i = 0; i < len; i++) {
+            PyObject *index = PyInt_FromLong(i);
+            PyObject *item = PyObject_GetItem(retval, index);
+            Py_DECREF(index);
+
+            lst_args.push_back(to_emacs(env, item));
+            Py_DECREF(item);
+        }
+
+        return env->funcall(env, Flst, len, &lst_args[0]);
     }
 
     // Make a user pointer and return an opaque Python object.
     return env->make_user_ptr(env, _PyObject_DecRef, retval);
 }
 
-std::vector<PyObject*> from_emacs(
+PyObject* from_emacs(
     emacs_env *env,
     ptrdiff_t nargs,
     emacs_value args[])
 {
-    // TODO since this is used just for args passing, build a Python tuple here
-    // instead of a C++ vector, which will have to be unpacked anyway
+    PyObject *args_tuple = PyTuple_New(nargs);
 
-    std::vector<PyObject*> out(nargs);
-    for (size_t i = 0; i < nargs; i++) {
-        out[i] = convert_emacs_symbol(env, args[i]);
-    }
+    for (size_t i = 0; i < nargs; i++)
+        PyTuple_SetItem(
+            args_tuple, i, convert_emacs_symbol(env, args[i]));
 
-    return out;
+    return args_tuple;
 }

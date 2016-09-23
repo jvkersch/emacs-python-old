@@ -7,10 +7,7 @@
 #include <vector>
 
 emacs_value to_emacs(emacs_env *env, PyObject *retval);
-
-std::vector<PyObject*> from_emacs(
-    emacs_env *env, ptrdiff_t nargs, emacs_value args[]);
-
+PyObject* from_emacs(emacs_env *env, ptrdiff_t nargs, emacs_value args[]);
 
 
 #endif // CONVERTERS_H

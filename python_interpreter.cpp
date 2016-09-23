@@ -123,7 +123,7 @@ void PythonInterpreter::get_exposed_functions()
 
 PyObject* PythonInterpreter::call_exposed_function(
     const std::string &name,
-    const std::vector<PyObject*> &args) const
+    PyObject* args) const
 {
     PyObject *pyfun;
     try {
@@ -137,16 +137,9 @@ PyObject* PythonInterpreter::call_exposed_function(
         throw PythonError(os.str());
     }
 
-    // assemble arguments tuple
-    size_t len = args.size();
-    PyObject *args_tuple = PyTuple_New(len);
-    for (size_t i = 0; i < len; i++) {
-        PyTuple_SetItem(args_tuple, i, args[i]);
-    }
+    PyObject *retval = PyObject_CallObject(pyfun, args);
 
-    PyObject *retval = PyObject_CallObject(pyfun, args_tuple);
-
-    Py_XDECREF(args_tuple);
+    Py_XDECREF(args);
     if (retval == nullptr)
         throw_python_error();
 

@@ -22,7 +22,7 @@ public:
 
     void get_exposed_functions();
     PyObject *call_exposed_function(
-        const std::string &name, const std::vector<PyObject*> &args) const;
+        const std::string &name, PyObject* args) const;
 
     // TODO make this private
     typedef std::map<std::string, PyObject*> pyfun_map;

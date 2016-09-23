@@ -23,3 +23,7 @@
 (ert-deftest test-run-object ()
   :tags '(run-object)
   (should (equal (type-of (method_that_returns_an_object)) 'user-ptr)))
+
+(ert-deftest test-run-list ()
+  :tags '(run-list)
+  (should (equal (method_that_returns_a_list) '(1 2 3 4))))
