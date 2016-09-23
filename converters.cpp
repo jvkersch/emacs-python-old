@@ -92,18 +92,16 @@ emacs_value to_emacs(emacs_env *env, PyObject *retval)
     return env->make_user_ptr(env, _PyObject_DecRef, retval);
 }
 
-std::vector<PyObject*> from_emacs(
+PyObject* from_emacs(
     emacs_env *env,
     ptrdiff_t nargs,
     emacs_value args[])
 {
-    // TODO since this is used just for args passing, build a Python tuple here
-    // instead of a C++ vector, which will have to be unpacked anyway
+    PyObject *args_tuple = PyTuple_New(nargs);
 
-    std::vector<PyObject*> out(nargs);
-    for (size_t i = 0; i < nargs; i++) {
-        out[i] = convert_emacs_symbol(env, args[i]);
-    }
+    for (size_t i = 0; i < nargs; i++)
+        PyTuple_SetItem(
+            args_tuple, i, convert_emacs_symbol(env, args[i]));
 
-    return out;
+    return args_tuple;
 }

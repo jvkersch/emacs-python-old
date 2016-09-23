@@ -21,7 +21,7 @@ F_call_python_function(
     emacs_value retval;
 
     try {
-        std::vector<PyObject*> pyargs = from_emacs(env, nargs, args);
+        PyObject* pyargs = from_emacs(env, nargs, args);
         PyObject *pyretval = interpreter.call_exposed_function(funname, pyargs);
         retval = to_emacs(env, pyretval);
     } catch (const Error &err) {
