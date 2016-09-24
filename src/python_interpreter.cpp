@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+
 // Turn a Python list of ints into a vector.
 std::vector<long> to_vector(PyObject *obj)
 {
