@@ -1,14 +1,9 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-class Error
-{
-public:
-    Error(const std::string &msg) : message(msg) {}
-    operator std::string() const { return message; }
+#include <string>
 
-private:
-    std::string message;
-};
+std::string get_working_path();
+
 
 #endif // UTILS_H
