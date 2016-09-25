@@ -1,6 +1,7 @@
 #include <Python.h>  // Needs to be included before STL containers
 
 #include "python_interpreter.h"
+#include "utils.h"
 
 #include <cassert>
 #include <iostream>
@@ -42,7 +43,19 @@ void PythonInterpreter::start() const
 {
     Py_Initialize();
     send_command("import sys");
-    send_command("sys.path.append('')");
+
+    try {
+        std::string cwd = get_working_path();
+        std::ostringstream cmd;
+        cmd << "sys.path.append('" << cwd << "')";
+        
+        send_command(cmd.str());
+    } catch (std::runtime_error &e) {
+        std::ostringstream msg;
+        msg << "Could not add library directory to sys.path. Message: "
+            << e.what();
+        throw PythonError(msg.str());
+    }
 }
 
 
