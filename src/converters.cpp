@@ -18,8 +18,6 @@ PyObject *convert_emacs_symbol(emacs_env *env, emacs_value symbol)
     emacs_value typ = env->type_of(env, symbol);
     PyObject *item = nullptr;
 
-    // TODO add support for user-ptr
-
     // TODO Persist these symbols rather than instantiating them on each
     // invocation.
     if (typ == env->intern(env, "integer")) {
@@ -39,6 +37,8 @@ PyObject *convert_emacs_symbol(emacs_env *env, emacs_value symbol)
                 env, env->vec_get(env, symbol, i));
             PyList_SetItem(item, i, list_item);
         }
+    } else if (typ == env->intern(env, "user-ptr")) {
+        item = static_cast<PyObject *>(env->get_user_ptr(env, symbol));
     } else
         throw Error(std::string("Argument type not supported"));
 
@@ -99,9 +99,11 @@ PyObject* from_emacs(
 {
     PyObject *args_tuple = PyTuple_New(nargs);
 
-    for (size_t i = 0; i < nargs; i++)
-        PyTuple_SetItem(
-            args_tuple, i, convert_emacs_symbol(env, args[i]));
+    for (size_t i = 0; i < nargs; i++) {
+        PyObject *arg = convert_emacs_symbol(env, args[i]);
+        Py_INCREF(arg);
+        PyTuple_SetItem(args_tuple, i, arg);
+    }
 
     return args_tuple;
 }
