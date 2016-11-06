@@ -31,7 +31,7 @@ void defun(
         emacs_env *env,
         ptrdiff_t nargs,
         emacs_value args[],
-        void *) noexcept,
+        void *),
     const char *doc,
     void *data)
 {

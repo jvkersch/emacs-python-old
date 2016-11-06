@@ -7,7 +7,7 @@
 
 
 // Py_XDECREF as a function, used as a callback by emacs' make_user_ptr
-static void _PyObject_DecRef(void *obj) noexcept
+static void _PyObject_DecRef(void *obj)
 {
     Py_XDECREF(obj);
 }

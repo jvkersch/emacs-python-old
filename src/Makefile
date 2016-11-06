@@ -10,7 +10,7 @@ pymacs.so: $(OBJS)
 	$(CXX) -shared $(OBJS) -o $@ $(PY_LDFLAGS) $(LDFLAGS) -Wl,-rpath,$(RPATH)
 
 %.o: %.cpp
-	$(CXX) $(PY_CFLAGS) $(CFLAGS) -I. -fPIC -c -std=c++11 $<
+	$(CXX) $(PY_CFLAGS) $(CFLAGS) -I. -fPIC -c $<
 
 .PHONY: clean tests
 

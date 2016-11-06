@@ -15,7 +15,7 @@ PythonInterpreter interpreter;
 
 static emacs_value
 F_call_python_function(
-    emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data) noexcept
+    emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
     const char *funname = (const char *)data;
     emacs_value retval;
@@ -34,7 +34,7 @@ F_call_python_function(
 
 static emacs_value
 F_load_python_module(
-    emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data) noexcept
+    emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
     try {
         std::string module_name = get_string_from_arg(env, args[0]);
@@ -42,8 +42,12 @@ F_load_python_module(
         interpreter.import(module_name);
         interpreter.get_exposed_functions();
 
-        for (auto &namedfun : interpreter.exported_methods_map) {
-            const char *name = namedfun.first.c_str();
+        const PythonInterpreter::pyfun_map& pyfuns = \
+            interpreter.exported_methods_map;
+        for (PythonInterpreter::pyfun_map::const_iterator it = pyfuns.begin();
+             it != pyfuns.end(); it++)
+        {
+            const char *name = it->first.c_str();
             defun(env, name, 0, 32,  // TODO get min/max arity from Python?
                   F_call_python_function, "doc", (void *)name);
         }
@@ -58,7 +62,7 @@ F_load_python_module(
 
 static emacs_value
 F_add_to_sys_path(
-    emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data) noexcept
+    emacs_env *env, ptrdiff_t nargs, emacs_value args[], void *data)
 {
     try {
         std::string path = get_string_from_arg(env, args[0]);
