@@ -10,35 +10,6 @@
 #include <vector>
 
 
-// Turn a Python list of ints into a vector.
-std::vector<long> to_vector(PyObject *obj)
-{
-    assert(PyIter_Check(obj) == 0);
-    std::vector<long> out;
-
-    PyObject *iterator = PyObject_GetIter(obj);
-    if (iterator == nullptr) {
-        throw PythonError("Object does not support iterating");
-    }
-
-    PyObject *item;
-    while ((item = PyIter_Next(iterator))) {
-        if (!PyInt_Check(item)) {
-            throw PythonError("Not an integer");
-        }
-
-        long val = PyInt_AsLong(item);
-        out.push_back(val);
-
-        Py_DECREF(item);
-    }
-
-    Py_DECREF(iterator);
-
-    return out;
-}
-
-
 void PythonInterpreter::start() const
 {
     Py_Initialize();
