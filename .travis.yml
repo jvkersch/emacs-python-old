@@ -5,6 +5,8 @@ cache:
 compiler:
   - gcc
 before_install:
+  - ls $HOME
+  - ls $HOME/emacs
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
 install:
